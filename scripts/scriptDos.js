@@ -1031,8 +1031,8 @@ const validaciones = (letraAComparar, jugador1, arrayPreguntasDom) => {
     } else {
         Swal.fire({
             title: `${nombre}, se terminó el juego! \n Tus resultados son: \n
-            Respuestas correctas: ${puntos}\n
-            Respuestas incorrectas: ${incorrectas}`,
+            Respuestas correctas: ${jugador1.puntos}\n
+            Respuestas incorrectas: ${jugador1.incorrectas}`,
             width: 600,
             padding: '3em',
             color: '#716add',
@@ -1097,7 +1097,7 @@ comenzar.addEventListener("submit", (e) => {
 
     Swal.fire({
         icon: 'success', //los iconos los puedo cambiar viendo los que hay en la página de la librería
-        title: `Bienvenido ${nombre}!! ¿Quieres Jugar a Pasapalabra?`,
+        title: `Bienvenid@ ${nombre}!! ¿Quieres Jugar a Pasapalabra?`,
         confirmButtonText: "¡¡Vamos allá!!"
     })
     console.log(jugador1);
