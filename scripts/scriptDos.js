@@ -1039,7 +1039,7 @@ const validaciones = (letraAComparar, jugador1, arrayPreguntasDom) => {
            /*  background: '#fff url(/img/letras.gif)', */
             backdrop: `
               rgba(0,0,123,0.4)
-              url("/img/ivan.gif")
+              url("../img/ivan.gif")
               left
               no-repeat
             `
