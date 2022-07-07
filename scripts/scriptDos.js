@@ -953,7 +953,7 @@ const acaVanLasPreguntas = document.querySelector("#acaVanLasPreguntas");
 const juguemos = (jugador1) => {
     console.log(jugador1);
 
-   
+
     let contador = 0;
     for (const pregunta of preguntas) {
         console.log(pregunta[jugador1.rosco]);
@@ -1000,9 +1000,22 @@ const validaciones = (letraAComparar, jugador1, arrayPreguntasDom) => {
 
     if (nuevoArregloRespuestas[letraAComparar].toUpperCase() == nuevoArregloPreguntas[letraAComparar]) {
         let audioCorrecta = document.querySelector("#audioCorrecta");
-
+        //alerta de toastify
+        
         audioCorrecta.play();
-        syncDelay(3000);
+        Toastify({
+
+            text: "Respuesta Correcta!!",
+
+            duration: 3000,
+            style:{
+                background: "#A1E374"
+            },
+
+
+        }).showToast();
+        syncDelay(2000);
+
         //CONTINUA EL JUEGO
         const devolucion = document.querySelector("#devolucion")
         devolucion.innerHTML = "<h6> Respuesta Correcta </h6>";
@@ -1016,9 +1029,20 @@ const validaciones = (letraAComparar, jugador1, arrayPreguntasDom) => {
     } else {
         let audioIncorrecta = document.querySelector("#audioIncorrecta");
         audioIncorrecta.play();
+        Toastify({
+
+            text: "Respuesta Incorrecta!!",
+
+            duration: 3000,
+            style:{
+                background: "#F90202"
+            },
+
+
+        }).showToast();
         devolucion.innerHTML = `<h6> ¡Respuesta Incorrecta! <br> La palabra correcta era ${nuevoArregloPreguntas[letraAComparar]} </h6>`
 
-        syncDelay(1000);  
+        syncDelay(1000);
         colorLetra[letraAComparar].style.background = "red";
         jugador1.incorrectas++;
         console.log(`respuestasIncorrectas: ${jugador1.incorrectas} `);
@@ -1036,16 +1060,16 @@ const validaciones = (letraAComparar, jugador1, arrayPreguntasDom) => {
             width: 600,
             padding: '3em',
             color: '#716add',
-           /*  background: '#fff url(/img/letras.gif)', */
+            /*  background: '#fff url(/img/letras.gif)', */
             backdrop: `
               rgba(0,0,123,0.4)
               url("../img/ivan.gif")
               left
               no-repeat
             `
-          })
+        })
 
-         
+
     }
 }
 
@@ -1079,10 +1103,12 @@ comenzar.addEventListener("submit", (e) => {
     e.preventDefault();
     const nombreUno = document.querySelector("#nombreJugadorUno");
     const jugador1 = creacionJugadores(nombreUno);
- 
+
     //DESESTRUCTURACION OBJETO JUGADOR
 
- const{ nombre} = jugador1;
+    const {
+        nombre
+    } = jugador1;
 
     juguemos(jugador1);
 
