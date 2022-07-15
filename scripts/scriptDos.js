@@ -1035,7 +1035,7 @@ const validaciones = (letraAComparar, jugador1, arrayPreguntasDom) => {
 
             duration: 3000,
             style:{
-                background: "#F90202"
+                background: "#A1E374"
             },
 
 

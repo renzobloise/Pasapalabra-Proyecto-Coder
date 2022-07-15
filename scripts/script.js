@@ -26,3 +26,40 @@ setInterval(() => {
 
 }, 20);
 
+
+//FETCH INSTRUCCIONES
+const divInstrucciones = document.querySelector(".instrucciones")
+const botonInstrucciones = document.querySelector("#instructions")
+
+
+fetch('../json/instrucciones.json')
+    .then( (res) => res.json())
+    .then( (data) => {
+
+        data.forEach((elemento) => {
+            const div = document.createElement('div')
+            div.classList.add("divNuevo")
+            div.innerHTML = `
+                <h4>${elemento.nombre}</h4>
+                <p>${elemento.contenido}</p>
+               
+            `
+   
+            divInstrucciones.append(div)
+            const divNuevo = document.querySelector(".divNuevo")
+            botonInstrucciones.onclick =  () =>{
+             /*  divNuevo.style.display = "flex" */  //Lo dejo comentado porque no se si lo voy a terminar introduciendo en el dom o si lo voy a dejar con el sweetalert que puse mas abajo
+
+              Swal.fire({
+                icon: 'question',
+                width: 800,
+                title: `INSTRUCCIONES <br> ${elemento.contenido}. `,
+                confirmButtonText: "ENTENDIDO"
+            })
+        
+            }
+        })
+    })
+
+    
+   

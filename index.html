@@ -23,12 +23,21 @@
 
     <!-- HEADER  -->
 
-    <div class="musica">
-        <audio id="player" autoplay loop>
-            <source src="music/intro.mp3" type="audio/mp3" id="musica">
-        </audio>
-        <input type="image" src="img/nota-musical.png" alt="" width="48" height="48" onclick="mute()">
+    <div class="header">
+
+        <div class="instrucciones">
+
+            <button id="instructions"> Ver Instrucciones </button>
+        
+        </div>
+            <div class="musica">
+                <audio id="player" autoplay loop>
+                    <source src="music/intro.mp3" type="audio/mp3" id="musica">
+                </audio>
+                <input type="image" src="img/nota-musical.png" alt="" width="48" height="48" onclick="mute()">
+            </div>
     </div>
+
 
   <!-- MAIN  -->
     <main id="mainIndex">
