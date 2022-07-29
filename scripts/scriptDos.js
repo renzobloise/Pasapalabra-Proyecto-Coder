@@ -943,15 +943,27 @@ const answer = document.querySelector("#acaVanLasRespuestas");
 const contestacion = document.querySelector("#contestacion"); //para el boton submit. contestación es el formulario
 const respuesta = document.querySelector("#respuesta");
 const acaVanLasPreguntas = document.querySelector("#acaVanLasPreguntas");
-
-
+const apareceRosco = document.querySelector(".contenedorRoscoYPreguntas")
+const header = document.querySelector("#header");
+const headerPuntos = document.querySelector("#headerPuntos");
+const marcadorCorrectas = document.querySelector("#correctas");
+const marcadorIncorrectas = document.querySelector("#incorrectas")
+const tiempoDom = document.getElementById("tiempo")
+let tiempo = 150;
+const encabezado = document.querySelector("#encabezado");
 
 
 
 
 // BUCLE DE CREACION DE PREGUNTAS
 const juguemos = (jugador1) => {
-    console.log(jugador1);
+    
+setInterval(()=>{
+    tiempo--;
+    console.log("tiempo");
+    tiempoDom.innerHTML = `Tiempo restante: ${tiempo}`;
+},1000)
+
 
 
     let contador = 0;
@@ -999,16 +1011,18 @@ const validaciones = (letraAComparar, jugador1, arrayPreguntasDom) => {
     console.log(nuevoArregloPreguntas[letraAComparar]);
 
     if (nuevoArregloRespuestas[letraAComparar].toUpperCase() == nuevoArregloPreguntas[letraAComparar]) {
+        jugador1.puntos++;
         let audioCorrecta = document.querySelector("#audioCorrecta");
+        marcadorCorrectas.innerHTML = ` <h5> Correctas: ${jugador1.puntos} </h5>`;
         //alerta de toastify
-        
+
         audioCorrecta.play();
         Toastify({
 
             text: "Respuesta Correcta!!",
 
             duration: 3000,
-            style:{
+            style: {
                 background: "#A1E374"
             },
 
@@ -1018,13 +1032,14 @@ const validaciones = (letraAComparar, jugador1, arrayPreguntasDom) => {
 
         //CONTINUA EL JUEGO
         const devolucion = document.querySelector("#devolucion")
-        devolucion.innerHTML = "<h6> Respuesta Correcta </h6>";
+        devolucion.style.display = "block"
+        devolucion.innerHTML = `<h6> ¡Respuesta CORRECTA!`
         colorLetra[letraAComparar].style.background = "green";
-        jugador1.puntos++;
+       
         console.log(`respuestas correctas: ${jugador1.puntos} `);
         localStorage.setItem("respuestasCorrectas", jugador1.puntos)
         let correctas = localStorage.getItem("respuestasCorrectas");
-        puntosLocal.innerHTML = `<h6> Respuestas Correctas ${correctas} </h6>`
+        
 
     } else {
         let audioIncorrecta = document.querySelector("#audioIncorrecta");
@@ -1034,17 +1049,21 @@ const validaciones = (letraAComparar, jugador1, arrayPreguntasDom) => {
             text: "Respuesta Incorrecta!!",
 
             duration: 3000,
-            style:{
-                background: "#A1E374"
+            style: {
+
+                background: "#FF5F6D" /* Chrome 10-25, Safari 5.1-6 */
+
             },
 
 
         }).showToast();
+        devolucion.style.display = "block"
         devolucion.innerHTML = `<h6> ¡Respuesta Incorrecta! <br> La palabra correcta era ${nuevoArregloPreguntas[letraAComparar]} </h6>`
 
         syncDelay(1000);
         colorLetra[letraAComparar].style.background = "red";
         jugador1.incorrectas++;
+        marcadorIncorrectas.innerHTML = ` <h5> Incorrectas: ${jugador1.incorrectas} </h5>`;
         console.log(`respuestasIncorrectas: ${jugador1.incorrectas} `);
 
     }
@@ -1127,10 +1146,14 @@ comenzar.addEventListener("submit", (e) => {
         confirmButtonText: "¡¡Vamos allá!!"
     })
     console.log(jugador1);
+    header.style.display = "none";
     acaVanLasPreguntas.style.display = "flex";
     contestacion.style.display = "block";
     arrayPreguntasDom[0].style.display = "block";
     colorLetra[0].style.background = "yellow";
+    apareceRosco.style.cssText = "display: flex; justify-content: center; flex-wrap: wrap; margin-right: 5rem; margin-left: 5rem; margin-top: -4rem;";
+    encabezado.style.cssText = "display: flex; justify-content: space-between; margin-top: 1rem;";
+
     //BOTON PARA ENVIAR RESPUESTA
 
 
