@@ -949,7 +949,7 @@ const headerPuntos = document.querySelector("#headerPuntos");
 const marcadorCorrectas = document.querySelector("#correctas");
 const marcadorIncorrectas = document.querySelector("#incorrectas")
 const tiempoDom = document.getElementById("tiempo")
-let tiempo = 150;
+let tiempo = 203;
 const encabezado = document.querySelector("#encabezado");
 
 
@@ -957,29 +957,61 @@ const encabezado = document.querySelector("#encabezado");
 
 // BUCLE DE CREACION DE PREGUNTAS
 const juguemos = (jugador1) => {
-    
-setInterval(()=>{
-    tiempo--;
-    console.log("tiempo");
-    tiempoDom.innerHTML = `Tiempo restante: ${tiempo}`;
-},1000)
 
+    const reloj = setInterval(() => {
+        tiempo--;
+        if (tiempo <=200){
+            tiempoDom.innerHTML = `Tiempo restante: ${tiempo}`;
+        }
+       
+        if (tiempo <= 0) {
+            clearInterval(reloj);
+            Swal.fire({
+                title: `${nombre}, SE TE ACABO EL TIEMPO! \n Tus resultados son: \n
+            
+            Respuestas correctas: ${jugador1.puntos}\n
+            Respuestas incorrectas: ${jugador1.incorrectas}`,
+                confirmButtonText: "¡¡JUGAR DE NUEVO!!",
+                showDenyButton: true,
+                denyButtonText: "Salir",
+                width: 600,
+                padding: '3em',
+                color: '#716add',
 
+                backdrop: `
+              rgba(0,0,123,0.4)
+              url("../img/ivan.gif")
+              left
+              no-repeat
+            `
+
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire('Allá Vamos', '', 'success')
+                        .then((result) => {
+                            location.reload();
+                        })
+                } else if (result.isDenied) {
+                    Swal.fire('Esperamos verte pronto', '', 'error')
+                        .then((result) => {
+                            window.location.href = "../index.html"
+                        })
+                }
+            })
+        }
+    }, 1000)
 
     let contador = 0;
     for (const pregunta of preguntas) {
-        console.log(pregunta[jugador1.rosco]);
         const elementoPregunta = document.createElement("h4");
-        elementoPregunta.classList.add(`preguntaRosco`) //Le creo una clase a las preguntas para después seleccionarlas todas
-        elementoPregunta.setAttribute("id", `pregunta${contador}`); //Le creo un id a cada pregunta particular para manipular su estilo al responder
+        elementoPregunta.classList.add(`preguntaRosco`)
+        elementoPregunta.setAttribute("id", `pregunta${contador}`);
         if (contador === 13 || contador === 16 || contador === 22) {
             elementoPregunta.innerHTML = `<p>Contiene ${pregunta[jugador1.rosco].letra}</p> ${pregunta[jugador1.rosco].definicion} `
 
         } else {
             elementoPregunta.innerHTML = `<p>Comienza con ${pregunta[jugador1.rosco].letra}</p> ${pregunta[jugador1.rosco].definicion} ` //
-            //Ahora para mostrarlo con el dom tengo dos formas de indexarlo, o con un append (que agrega uno debajo del otro o con un prepend que agrega uno encima del otro)
         }
-        console.log(`contador: ${contador}`);
         question.append(elementoPregunta);
 
         //AGREGO LAS PALABRAS DE CADA DEFINICION AL NUEVO ARREGLO
@@ -1006,65 +1038,48 @@ const validaciones = (letraAComparar, jugador1, arrayPreguntasDom) => {
 
     const puntosLocal = document.querySelector("#puntos");
 
-    console.log(`letra A comparar: ${letraAComparar}`);
-    console.log(nuevoArregloRespuestas[letraAComparar]);
-    console.log(nuevoArregloPreguntas[letraAComparar]);
-
     if (nuevoArregloRespuestas[letraAComparar].toUpperCase() == nuevoArregloPreguntas[letraAComparar]) {
         jugador1.puntos++;
         let audioCorrecta = document.querySelector("#audioCorrecta");
         marcadorCorrectas.innerHTML = ` <h5> Correctas: ${jugador1.puntos} </h5>`;
-        //alerta de toastify
 
         audioCorrecta.play();
         Toastify({
-
             text: "Respuesta Correcta!!",
-
             duration: 3000,
             style: {
                 background: "#A1E374"
             },
 
-
         }).showToast();
         syncDelay(2000);
 
         //CONTINUA EL JUEGO
-        const devolucion = document.querySelector("#devolucion")
-        devolucion.style.display = "block"
-        devolucion.innerHTML = `<h6> ¡Respuesta CORRECTA!`
+
         colorLetra[letraAComparar].style.background = "green";
-       
-        console.log(`respuestas correctas: ${jugador1.puntos} `);
         localStorage.setItem("respuestasCorrectas", jugador1.puntos)
         let correctas = localStorage.getItem("respuestasCorrectas");
-        
+
 
     } else {
         let audioIncorrecta = document.querySelector("#audioIncorrecta");
         audioIncorrecta.play();
         Toastify({
 
-            text: "Respuesta Incorrecta!!",
+            text: `Respuesta Incorrecta! La respuesta correcta era ${nuevoArregloPreguntas[letraAComparar]}`,
 
             duration: 3000,
             style: {
-
-                background: "#FF5F6D" /* Chrome 10-25, Safari 5.1-6 */
-
+                background: "#FF5F6D"
             },
 
-
         }).showToast();
-        devolucion.style.display = "block"
-        devolucion.innerHTML = `<h6> ¡Respuesta Incorrecta! <br> La palabra correcta era ${nuevoArregloPreguntas[letraAComparar]} </h6>`
+
 
         syncDelay(1000);
         colorLetra[letraAComparar].style.background = "red";
         jugador1.incorrectas++;
         marcadorIncorrectas.innerHTML = ` <h5> Incorrectas: ${jugador1.incorrectas} </h5>`;
-        console.log(`respuestasIncorrectas: ${jugador1.incorrectas} `);
 
     }
     if (letraAComparar < 24) {
@@ -1073,34 +1088,47 @@ const validaciones = (letraAComparar, jugador1, arrayPreguntasDom) => {
         colorLetra[letraAComparar + 1].style.background = "yellow";
     } else {
         Swal.fire({
-            title: `${nombre}, se terminó el juego! \n Tus resultados son: \n
-            Respuestas correctas: ${jugador1.puntos}\n
-            Respuestas incorrectas: ${jugador1.incorrectas}`,
+            title: `${nombre}, SE TERMINÓ EL JUEGO! \n Tus resultados son: \n
+        
+        Respuestas correctas: ${jugador1.puntos}\n
+        Respuestas incorrectas: ${jugador1.incorrectas}`,
+            confirmButtonText: "¡¡JUGAR DE NUEVO!!",
+            showDenyButton: true,
+            denyButtonText: "Salir",
             width: 600,
             padding: '3em',
             color: '#716add',
-            /*  background: '#fff url(/img/letras.gif)', */
             backdrop: `
-              rgba(0,0,123,0.4)
-              url("../img/ivan.gif")
-              left
-              no-repeat
-            `
+          rgba(0,0,123,0.4)
+          url("../img/ivan.gif")
+          left
+          no-repeat
+        `
+
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire('Allá Vamos', '', 'success')
+                    .then((result) => {
+
+
+                        location.reload();
+                    })
+            } else if (result.isDenied) {
+                Swal.fire('Esperamos verte pronto', '', 'error')
+                    .then((result) => {
+
+                        window.location.href = "../index.html"
+                    })
+            }
         })
 
 
     }
 }
 
-
-
 //CREACION DE JUGADORES
 const creacionJugadores = (nombreUno) => {
-
-
     const jugador1 = new Jugador(nombre = nombreUno.value, id = 1, puntos = 0, incorrectas = 0, rosco = Number(Math.round(Math.random() * 4)), vuelta = 0, ronda = 0, gameActive = true);
-    console.log(`nombre: ${jugador1.nombre}`);
-    console.log(jugador1);
     return jugador1;
 }
 
@@ -1112,12 +1140,11 @@ const nuevoArregloRespuestas = [];
 const arregloDeLetras = [];
 
 
-
-
-
 //Arreglo para cambiar los colores
 const colorLetra = [document.querySelector("#jugadorUno0"), document.querySelector("#jugadorUno1"), document.querySelector("#jugadorUno2"), document.querySelector("#jugadorUno3"), document.querySelector("#jugadorUno4"), document.querySelector("#jugadorUno5"), document.querySelector("#jugadorUno6"), document.querySelector("#jugadorUno7"), document.querySelector("#jugadorUno8"), document.querySelector("#jugadorUno9"), document.querySelector("#jugadorUno10"), document.querySelector("#jugadorUno11"), document.querySelector("#jugadorUno12"), document.querySelector("#jugadorUno13"), document.querySelector("#jugadorUno14"), document.querySelector("#jugadorUno15"), document.querySelector("#jugadorUno16"), document.querySelector("#jugadorUno17"), document.querySelector("#jugadorUno18"), document.querySelector("#jugadorUno19"), document.querySelector("#jugadorUno20"), document.querySelector("#jugadorUno21"), document.querySelector("#jugadorUno22"), document.querySelector("#jugadorUno23"), document.querySelector("#jugadorUno24")];
 
+
+//BOTON COMENZAR
 comenzar.addEventListener("submit", (e) => {
     e.preventDefault();
     const nombreUno = document.querySelector("#nombreJugadorUno");
@@ -1128,24 +1155,19 @@ comenzar.addEventListener("submit", (e) => {
     const {
         nombre
     } = jugador1;
-
+    Swal.fire({
+        icon: 'success',
+        title: `Bienvenid@ ${nombre}!! ¿Quieres Jugar a Pasapalabra?`,
+        confirmButtonText: "¡¡Vamos allá!!",
+        timer: "3000"
+         
+    })
     juguemos(jugador1);
 
-    //Selección de cada una de las preguntas para que vaya apareciendo
-    /* const preguntaA = document.querySelector(".pregunta0");
-    const preguntaB = document.querySelector(".pregunta1");
-    const preguntaC = document.querySelector(".pregunta2"); */
     const arrayPreguntasDom = [document.querySelector("#pregunta0"), document.querySelector("#pregunta1"), document.querySelector("#pregunta2"), document.querySelector("#pregunta3"), document.querySelector("#pregunta4"), document.querySelector("#pregunta5"), document.querySelector("#pregunta6"), document.querySelector("#pregunta7"), document.querySelector("#pregunta8"), document.querySelector("#pregunta9"), document.querySelector("#pregunta10"), document.querySelector("#pregunta11"), document.querySelector("#pregunta12"), document.querySelector("#pregunta13"), document.querySelector("#pregunta14"), document.querySelector("#pregunta15"), document.querySelector("#pregunta16"), document.querySelector("#pregunta17"), document.querySelector("#pregunta18"), document.querySelector("#pregunta19"), document.querySelector("#pregunta20"), document.querySelector("#pregunta21"), document.querySelector("#pregunta22"), document.querySelector("#pregunta23"), document.querySelector("#pregunta24")];
-    console.log(arrayPreguntasDom);
 
 
 
-    Swal.fire({
-        icon: 'success', //los iconos los puedo cambiar viendo los que hay en la página de la librería
-        title: `Bienvenid@ ${nombre}!! ¿Quieres Jugar a Pasapalabra?`,
-        confirmButtonText: "¡¡Vamos allá!!"
-    })
-    console.log(jugador1);
     header.style.display = "none";
     acaVanLasPreguntas.style.display = "flex";
     contestacion.style.display = "block";
@@ -1156,17 +1178,11 @@ comenzar.addEventListener("submit", (e) => {
 
     //BOTON PARA ENVIAR RESPUESTA
 
-
     contestacion.addEventListener("submit", (e) => {
         e.preventDefault();
         const elementoRespuesta = document.createElement("h5")
-
-        console.log(respuesta.value);
         nuevoArregloRespuestas.push(respuesta.value);
         contestacion.reset();
-
-
-
 
         //------------------------COMPARADORES DE RESPUESTAS--------
         switch (true) {
@@ -1181,146 +1197,124 @@ comenzar.addEventListener("submit", (e) => {
                 //COMPARA LETRA B
             case arrayPreguntasDom[1].style.display == "block":
                 elementoRespuesta.classList.add(`respuesta${1}`)
-                validaciones(1, jugador1, arrayPreguntasDom); //el valor que paso por parámetro es la posición del arreglo que voy a comparar
+                validaciones(1, jugador1, arrayPreguntasDom);
                 break;
 
                 //COMPARA LETRA C
             case arrayPreguntasDom[2].style.display == "block":
                 elementoRespuesta.classList.add(`respuesta${2}`)
-                validaciones(2, jugador1, arrayPreguntasDom); //el valor que paso por parámetro es la posición del arreglo que voy a comparar
+                validaciones(2, jugador1, arrayPreguntasDom);
                 break;
                 //COMPARA LETRA D
             case arrayPreguntasDom[3].style.display == "block":
                 elementoRespuesta.classList.add(`respuesta${3}`)
-                validaciones(3, jugador1, arrayPreguntasDom); //el valor que paso por parámetro es la posición del arreglo que voy a comparar
+                validaciones(3, jugador1, arrayPreguntasDom);
                 break;
                 //COMPARA LETRA E
             case arrayPreguntasDom[4].style.display == "block":
                 elementoRespuesta.classList.add(`respuesta${4}`)
-                validaciones(4, jugador1, arrayPreguntasDom); //el valor que paso por parámetro es la posición del arreglo que voy a comparar
+                validaciones(4, jugador1, arrayPreguntasDom);
                 break;
                 //COMPARA LETRA F
             case arrayPreguntasDom[5].style.display == "block":
                 elementoRespuesta.classList.add(`respuesta${5}`)
-                validaciones(5, jugador1, arrayPreguntasDom); //el valor que paso por parámetro es la posición del arreglo que voy a comparar
+                validaciones(5, jugador1, arrayPreguntasDom);
                 break;
                 //COMPARA LETRA G
             case arrayPreguntasDom[6].style.display == "block":
                 elementoRespuesta.classList.add(`respuesta${6}`)
-                validaciones(6, jugador1, arrayPreguntasDom); //el valor que paso por parámetro es la posición del arreglo que voy a comparar
+                validaciones(6, jugador1, arrayPreguntasDom);
                 break;
                 //COMPARA LETRA H
             case arrayPreguntasDom[7].style.display == "block":
                 elementoRespuesta.classList.add(`respuesta${7}`)
-                validaciones(7, jugador1, arrayPreguntasDom); //el valor que paso por parámetro es la posición del arreglo que voy a comparar
+                validaciones(7, jugador1, arrayPreguntasDom);
                 break;
                 //COMPARA LETRA I
             case arrayPreguntasDom[8].style.display == "block":
                 elementoRespuesta.classList.add(`respuesta${8}`)
-                validaciones(8, jugador1, arrayPreguntasDom); //el valor que paso por parámetro es la posición del arreglo que voy a comparar
+                validaciones(8, jugador1, arrayPreguntasDom);
                 break;
                 //COMPARA LETRA J
             case arrayPreguntasDom[9].style.display == "block":
                 elementoRespuesta.classList.add(`respuesta${9}`)
-                validaciones(9, jugador1, arrayPreguntasDom); //el valor que paso por parámetro es la posición del arreglo que voy a comparar
+                validaciones(9, jugador1, arrayPreguntasDom);
                 break;
                 //COMPARA LETRA L
             case arrayPreguntasDom[10].style.display == "block":
                 elementoRespuesta.classList.add(`respuesta${10}`)
-                validaciones(10, jugador1, arrayPreguntasDom); //el valor que paso por parámetro es la posición del arreglo que voy a comparar
+                validaciones(10, jugador1, arrayPreguntasDom);
                 break;
                 //COMPARA LETRA M
             case arrayPreguntasDom[11].style.display == "block":
                 elementoRespuesta.classList.add(`respuesta${11}`)
-                validaciones(11, jugador1, arrayPreguntasDom); //el valor que paso por parámetro es la posición del arreglo que voy a comparar
+                validaciones(11, jugador1, arrayPreguntasDom);
                 break;
                 //COMPARA LETRA N
             case arrayPreguntasDom[12].style.display == "block":
                 elementoRespuesta.classList.add(`respuesta${12}`)
-                validaciones(12, jugador1, arrayPreguntasDom); //el valor que paso por parámetro es la posición del arreglo que voy a comparar
+                validaciones(12, jugador1, arrayPreguntasDom);
                 break;
                 //COMPARA LETRA Ñ
             case arrayPreguntasDom[13].style.display == "block":
                 elementoRespuesta.classList.add(`respuesta${13}`)
-                validaciones(13, jugador1, arrayPreguntasDom); //el valor que paso por parámetro es la posición del arreglo que voy a comparar
+                validaciones(13, jugador1, arrayPreguntasDom);
                 break;
                 //COMPARA LETRA O
             case arrayPreguntasDom[14].style.display == "block":
                 elementoRespuesta.classList.add(`respuesta${14}`)
-                validaciones(14, jugador1, arrayPreguntasDom); //el valor que paso por parámetro es la posición del arreglo que voy a comparar
+                validaciones(14, jugador1, arrayPreguntasDom);
                 break;
                 //COMPARA LETRA P
             case arrayPreguntasDom[15].style.display == "block":
                 elementoRespuesta.classList.add(`respuesta${15}`)
-                validaciones(15, jugador1, arrayPreguntasDom); //el valor que paso por parámetro es la posición del arreglo que voy a comparar
+                validaciones(15, jugador1, arrayPreguntasDom);
                 break;
                 //COMPARA LETRA Q
             case arrayPreguntasDom[16].style.display == "block":
                 elementoRespuesta.classList.add(`respuesta${16}`)
-                validaciones(16, jugador1, arrayPreguntasDom); //el valor que paso por parámetro es la posición del arreglo que voy a comparar
+                validaciones(16, jugador1, arrayPreguntasDom);
                 break;
                 //COMPARA LETRA R
             case arrayPreguntasDom[17].style.display == "block":
                 elementoRespuesta.classList.add(`respuesta${17}`)
-                validaciones(17, jugador1, arrayPreguntasDom); //el valor que paso por parámetro es la posición del arreglo que voy a comparar
+                validaciones(17, jugador1, arrayPreguntasDom);
                 break;
                 //COMPARA LETRA S
             case arrayPreguntasDom[18].style.display == "block":
                 elementoRespuesta.classList.add(`respuesta${18}`)
-                validaciones(18, jugador1, arrayPreguntasDom); //el valor que paso por parámetro es la posición del arreglo que voy a comparar
+                validaciones(18, jugador1, arrayPreguntasDom);
                 break;
                 //COMPARA LETRA T
             case arrayPreguntasDom[19].style.display == "block":
                 elementoRespuesta.classList.add(`respuesta${19}`)
-                validaciones(19, jugador1, arrayPreguntasDom); //el valor que paso por parámetro es la posición del arreglo que voy a comparar
+                validaciones(19, jugador1, arrayPreguntasDom);
                 break;
                 //COMPARA LETRA U
             case arrayPreguntasDom[20].style.display == "block":
                 elementoRespuesta.classList.add(`respuesta${20}`)
-                validaciones(20, jugador1, arrayPreguntasDom); //el valor que paso por parámetro es la posición del arreglo que voy a comparar
+                validaciones(20, jugador1, arrayPreguntasDom);
                 break;
                 //COMPARA LETRA V
             case arrayPreguntasDom[21].style.display == "block":
                 elementoRespuesta.classList.add(`respuesta${21}`)
-                validaciones(21, jugador1, arrayPreguntasDom); //el valor que paso por parámetro es la posición del arreglo que voy a comparar
+                validaciones(21, jugador1, arrayPreguntasDom);
                 break;
                 //COMPARA LETRA X
             case arrayPreguntasDom[22].style.display == "block":
                 elementoRespuesta.classList.add(`respuesta${22}`)
-                validaciones(22, jugador1, arrayPreguntasDom); //el valor que paso por parámetro es la posición del arreglo que voy a comparar
+                validaciones(22, jugador1, arrayPreguntasDom);
                 break;
                 //COMPARA LETRA Y
             case arrayPreguntasDom[23].style.display == "block":
                 elementoRespuesta.classList.add(`respuesta${23}`)
-                validaciones(23, jugador1, arrayPreguntasDom); //el valor que paso por parámetro es la posición del arreglo que voy a comparar
+                validaciones(23, jugador1, arrayPreguntasDom);
                 break;
                 //COMPARA LETRA Z
             case arrayPreguntasDom[24].style.display == "block":
                 elementoRespuesta.classList.add(`respuesta${24}`)
-                validaciones(24, jugador1, arrayPreguntasDom); //el valor que paso por parámetro es la posición del arreglo que voy a comparar
+                validaciones(24, jugador1, arrayPreguntasDom);
                 break;
-
-
-
         }
-
-
-
     })
 })
-
-
-
-
-
-
-/* const elementoRespuesta = document.createElement("h5");
-elementoRespuesta.innerHTML = `${respuesta}`
-elementoRespuesta.classList.add(`respuesta${contador}`)
-
-answer.append(elementoRespuesta); */
-/*  respuesta.classList.add(`respuesta${contador}`) */ //Añado una clase a las respuestas para después compararlas 
-/* if (respuesta == pregunta[jugador1.rosco].palabra ) {
-    alert("correcto");
-}
-console.log(respuesta); */
